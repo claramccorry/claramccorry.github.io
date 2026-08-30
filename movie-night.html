@@ -292,7 +292,8 @@
   <div id="screen-swipe-done" class="hidden">
     <div class="panel">
       <h2>All swiped</h2>
-      <p>Waiting on anyone still deciding. Results update live below.</p>
+      <p>Nice work. Check in on results any time — they update as others finish.</p>
+      <button class="btn-primary" id="btn-view-results-from-done">View live results</button>
     </div>
   </div>
 
@@ -667,12 +668,14 @@ async function finishSwiping(){
 }
 
 /* ---------- results ---------- */
-$('#btn-goto-results').addEventListener('click', async ()=>{
+async function goToResults(){
   const { data: room } = await sb.from('rooms').select('*').eq('code', state.roomCode).maybeSingle();
   const { data: participants } = await sb.from('participants').select('*').eq('room_code', state.roomCode);
   await renderResults(room, participants);
   show('screen-results');
-});
+}
+$('#btn-goto-results').addEventListener('click', goToResults);
+$('#btn-view-results-from-done').addEventListener('click', goToResults);
 $('#btn-back-to-swipe').addEventListener('click', ()=>{
   if(state.swipeIndex < state.swipeDeck.length) show('screen-swipe'); else show('screen-swipe-done');
 });
