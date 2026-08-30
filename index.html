@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clara McCorry — Physics & Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f7f8f3;
+    --paper-line: #dbe1e0;
+    --ink: #131a22;
+    --ink-soft: #4d5860;
+    --signal: #765ba4;
+    --signal-dim: #ded4ec;
+    --marker: #ff5a1f;
+    --live: #0fa968;
+    --card-bg: #ffffff;
+    --radius: 3px;
+    --max-w: 1080px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.55;
+  }
+
+  a { color: var(--signal); }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 3px;
+  }
+
+  .wrap {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---------- NAV ---------- */
+  header.site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(247, 248, 243, 0.88);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .nav-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .wordmark .dot { color: var(--marker); }
+  nav.links { display: flex; gap: 28px; }
+  nav.links a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+  }
+  nav.links a:hover { color: var(--signal); }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    padding: 72px 0 56px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--signal);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--live);
+    box-shadow: 0 0 0 3px rgba(15,169,104,0.15);
+  }
+  h1.hero-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2.3rem, 4.5vw, 3.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0 0 20px;
+  }
+  h1.hero-title em {
+    font-style: italic;
+    color: var(--signal);
+  }
+  .hero-sub {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 46ch;
+    margin: 0 0 28px;
+  }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    padding: 11px 20px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    display: inline-block;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-primary:hover { background: var(--signal); }
+  .btn-ghost {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .btn-ghost:hover { border-color: var(--signal); color: var(--signal); }
+
+  .scope-frame {
+    background: var(--card-bg);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    padding: 14px;
+    box-shadow: 0 1px 0 var(--paper-line);
+  }
+  .scope-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+  }
+  canvas { display: block; width: 100%; height: auto; background: #fff; border-radius: 2px; }
+
+  /* ---------- SECTION HEADS ---------- */
+  .section { padding: 64px 0; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 34px;
+    border-bottom: 1px solid var(--paper-line);
+    padding-bottom: 14px;
+  }
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--marker);
+  }
+  h2.section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.7rem;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- PROJECTS ---------- */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  .card-desc {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin: 0;
+  }
+  .tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
+    color: var(--ink-soft);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .card-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    text-decoration: none;
+    color: var(--signal);
+    align-self: flex-start;
+  }
+  .card-link:hover { text-decoration: underline; }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .avatar {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    background:
+      repeating-linear-gradient(135deg, var(--signal) 0 2px, transparent 2px 10px),
+      #eef1f6;
+    border: 1px solid var(--paper-line);
+  }
+  .about-text p { color: var(--ink-soft); max-width: 62ch; }
+  .stat-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+  .stat b {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    display: block;
+    color: var(--ink);
+  }
+  .stat span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.03em;
+  }
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  footer {
+    border-top: 1px solid var(--paper-line);
+    padding: 40px 0 50px;
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-links { display: flex; gap: 22px; }
+  .footer-links a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+  }
+  .footer-links a:hover { color: var(--signal); }
+  .footer-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 780px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .project-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .avatar { max-width: 160px; }
+    nav.links { gap: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#top" class="wordmark">Clara McCorry<span class="dot">.</span></a>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#sims">Sims</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ---------- HERO ---------- -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">SIGNAL LIVE — running in your browser</div>
+        <h1 class="hero-title">Physics, simulated <em>in the open.</em></h1>
+        <p class="hero-sub">
+          I build small computational models — pendulums, gravity, waves — and publish the
+          working code alongside them. This page is itself running one, right now, no
+          screenshots involved.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#sims">See the simulations</a>
+          <a class="btn btn-ghost" href="#about">About me</a>
+        </div>
+      </div>
+      <div class="scope-frame">
+        <div class="scope-label"><span>hero.lissajous(t)</span><span>x(t), y(t)</span></div>
+        <canvas id="heroCanvas" width="440" height="320" aria-label="Live Lissajous curve animation"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- ABOUT ---------- -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">01</span>
+        <h2 class="section-title">About</h2>
+      </div>
+      <div class="about-grid">
+        <div class="avatar" role="img" aria-label="Placeholder avatar"></div>
+        <div class="about-text">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+            nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          </p>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+            fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+          <div class="stat-row">
+            <div class="stat"><b>12+</b><span>SIMULATIONS BUILT</span></div>
+            <div class="stat"><b>3</b><span>LAB PROJECTS LED</span></div>
+            <div class="stat"><b>3</b><span>YEARS IN THE LAB</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- PROJECTS ---------- -->
+  <section class="section" id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Projects</h2>
+      </div>
+      <div class="project-grid">
+
+        <div class="card">
+          <div class="avatar" style="aspect-ratio:16/10;"></div>
+          <h3 class="card-title">Cryogenic vacuum chamber calibration</h3>
+          <p class="card-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Design and calibration
+            of a low-temperature vacuum setup for testing detector response under
+            controlled thermal conditions.
+          </p>
+          <div class="tags"><span class="tag">instrumentation</span><span class="tag">cryogenics</span></div>
+          <a class="card-link" href="#">View writeup →</a>
+        </div>
+
+        <div class="card">
+          <div class="avatar" style="aspect-ratio:16/10;"></div>
+          <h3 class="card-title">Muon flux detector array</h3>
+          <p class="card-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Built and deployed a
+            scintillator-based detector array with custom data acquisition for measuring
+            cosmic muon flux over several months.
+          </p>
+          <div class="tags"><span class="tag">particle detection</span><span class="tag">DAQ</span></div>
+          <a class="card-link" href="#">View writeup →</a>
+        </div>
+
+        <div class="card">
+          <div class="avatar" style="aspect-ratio:16/10;"></div>
+          <h3 class="card-title">Laser interferometry bench</h3>
+          <p class="card-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Set up a Michelson
+            interferometer to measure sub-micron displacements, with automated fringe
+            counting and vibration isolation.
+          </p>
+          <div class="tags"><span class="tag">optics</span><span class="tag">precision measurement</span></div>
+          <a class="card-link" href="#">View writeup →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- SIMULATIONS ---------- -->
+  <section class="section" id="sims">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Simulations</h2>
+      </div>
+      <div class="project-grid">
+
+        <div class="card">
+          <div class="scope-frame" style="padding:8px;">
+            <canvas id="pendulumCanvas" width="360" height="220" aria-label="Live double pendulum simulation"></canvas>
+          </div>
+          <h3 class="card-title">Double pendulum</h3>
+          <p class="card-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. A chaotic two-arm
+            pendulum integrated with a simple Euler stepper, showing sensitivity to
+            initial conditions in real time.
+          </p>
+          <div class="tags"><span class="tag">python</span><span class="tag">numpy</span><span class="tag">chaos theory</span></div>
+          <a class="card-link" href="#">View source →</a>
+        </div>
+
+        <div class="card">
+          <div class="scope-frame" style="padding:8px;">
+            <canvas id="nbodyCanvas" width="360" height="220" aria-label="Live n-body gravity simulation"></canvas>
+          </div>
+          <h3 class="card-title">N-body gravity</h3>
+          <p class="card-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Four bodies under
+            mutual gravitation, integrated step by step with trailing orbit paths drawn
+            live on canvas.
+          </p>
+          <div class="tags"><span class="tag">javascript</span><span class="tag">canvas</span><span class="tag">orbital mechanics</span></div>
+          <a class="card-link" href="#">View source →</a>
+        </div>
+
+        <div class="card">
+          <div class="scope-frame" style="padding:8px;">
+            <canvas id="waveCanvas" width="360" height="220" aria-label="Live wave interference simulation"></canvas>
+          </div>
+          <h3 class="card-title">Wave interference</h3>
+          <p class="card-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Two coherent point
+            sources generating an evolving interference pattern, rendered as expanding
+            wavefronts.
+          </p>
+          <div class="tags"><span class="tag">c++</span><span class="tag">wave optics</span></div>
+          <a class="card-link" href="#">View source →</a>
+        </div>
+
+        <div class="card">
+          <div class="scope-frame" style="padding:8px;">
+            <canvas id="brownianCanvas" width="360" height="220" aria-label="Live Brownian motion simulation"></canvas>
+          </div>
+          <h3 class="card-title">Brownian motion</h3>
+          <p class="card-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Particles undergoing
+            random-walk diffusion under repeated stochastic collisions, plotted live.
+          </p>
+          <div class="tags"><span class="tag">python</span><span class="tag">statistical mechanics</span></div>
+          <a class="card-link" href="#">View source →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ---------- FOOTER / CONTACT ---------- -->
+<footer id="contact">
+  <div class="wrap footer-inner">
+    <span class="footer-note">© 2026 Clara McCorry — built from scratch, no framework.</span>
+    <div class="footer-links">
+      <a href="mailto:hello@example.com">Email</a>
+      <a href="https://github.com/">GitHub</a>
+      <a href="https://linkedin.com/">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function setupCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = canvas.width, h = canvas.height;
+  return canvas.getContext('2d');
+}
+
+/* ---------- HERO: Lissajous oscilloscope trace ---------- */
+(function hero() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  let t = 0;
+  let a = 3, b = 2, delta = 0;
+
+  function drawGrid() {
+    ctx.strokeStyle = '#eef1f0';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= w; x += 22) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+    }
+    for (let y = 0; y <= h; y += 22) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+  }
+
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    drawGrid();
+    delta += 0.004;
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#765ba4';
+    const cx = w / 2, cy = h / 2, rx = w * 0.38, ry = h * 0.38;
+    const steps = 360;
+    for (let i = 0; i <= steps; i++) {
+      const tt = (i / steps) * Math.PI * 2;
+      const x = cx + rx * Math.sin(a * tt + delta);
+      const y = cy + ry * Math.sin(b * tt);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    // moving dot
+    const headT = (t % (Math.PI * 2));
+    const hx = cx + rx * Math.sin(a * headT + delta);
+    const hy = cy + ry * Math.sin(b * headT);
+    ctx.beginPath();
+    ctx.fillStyle = '#ff5a1f';
+    ctx.arc(hx, hy, 4, 0, Math.PI * 2);
+    ctx.fill();
+    t += 0.03;
+    if (!reduceMotion) requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ---------- DOUBLE PENDULUM ---------- */
+(function pendulum() {
+  const canvas = document.getElementById('pendulumCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const originX = w / 2, originY = 40;
+  const g = 9.8, L1 = 60, L2 = 60, m1 = 10, m2 = 10;
+  let a1 = Math.PI / 2, a2 = Math.PI / 2 + 0.3;
+  let a1_v = 0, a2_v = 0;
+  let trail = [];
+
+  function step() {
+    const num1 = -g * (2 * m1 + m2) * Math.sin(a1) - m2 * g * Math.sin(a1 - 2 * a2) - 2 * Math.sin(a1 - a2) * m2 * (a2_v * a2_v * L2 + a1_v * a1_v * L1 * Math.cos(a1 - a2));
+    const den1 = L1 * (2 * m1 + m2 - m2 * Math.cos(2 * a1 - 2 * a2));
+    const a1_a = num1 / den1;
+
+    const num2 = 2 * Math.sin(a1 - a2) * (a1_v * a1_v * L1 * (m1 + m2) + g * (m1 + m2) * Math.cos(a1) + a2_v * a2_v * L2 * m2 * Math.cos(a1 - a2));
+    const den2 = L2 * (2 * m1 + m2 - m2 * Math.cos(2 * a1 - 2 * a2));
+    const a2_a = num2 / den2;
+
+    a1_v += a1_a * 0.15;
+    a2_v += a2_a * 0.15;
+    a1 += a1_v * 0.15;
+    a2 += a2_v * 0.15;
+  }
+
+  function frame() {
+    if (!reduceMotion) step();
+    const x1 = originX + L1 * Math.sin(a1);
+    const y1 = originY + L1 * Math.cos(a1);
+    const x2 = x1 + L2 * Math.sin(a2);
+    const y2 = y1 + L2 * Math.cos(a2);
+
+    trail.push({x: x2, y: y2});
+    if (trail.length > 90) trail.shift();
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = '#f4c9b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    trail.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+    ctx.stroke();
+
+    ctx.strokeStyle = '#131a22';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(originX, originY); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    ctx.fillStyle = '#765ba4';
+    [[x1,y1],[x2,y2]].forEach(([x,y]) => {
+      ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2); ctx.fill();
+    });
+
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ---------- N-BODY GRAVITY ---------- */
+(function nbody() {
+  const canvas = document.getElementById('nbodyCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w/2, cy = h/2;
+  const G = 0.6;
+
+  let bodies = [
+    { x: cx, y: cy, vx: 0, vy: 0, m: 400, color: '#131a22', trail: [] },
+    { x: cx + 90, y: cy, vx: 0, vy: 1.9, m: 6, color: '#765ba4', trail: [] },
+    { x: cx - 60, y: cy + 30, vx: -0.6, vy: -1.6, m: 4, color: '#ff5a1f', trail: [] },
+    { x: cx, y: cy - 75, vx: 2.0, vy: 0, m: 3, color: '#0fa968', trail: [] },
+  ];
+
+  function step() {
+    bodies.forEach(b => {
+      let fx = 0, fy = 0;
+      bodies.forEach(o => {
+        if (o === b) return;
+        const dx = o.x - b.x, dy = o.y - b.y;
+        const distSq = dx*dx + dy*dy + 20;
+        const dist = Math.sqrt(distSq);
+        const f = G * o.m / distSq;
+        fx += f * dx / dist;
+        fy += f * dy / dist;
+      });
+      b.vx += fx; b.vy += fy;
+    });
+    bodies.forEach(b => {
+      b.x += b.vx * 0.4; b.y += b.vy * 0.4;
+      b.trail.push({x: b.x, y: b.y});
+      if (b.trail.length > 70) b.trail.shift();
+    });
+  }
+
+  function frame() {
+    if (!reduceMotion) step();
+    ctx.clearRect(0, 0, w, h);
+    bodies.forEach(b => {
+      ctx.strokeStyle = b.color + '55';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      b.trail.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+      ctx.stroke();
+      ctx.fillStyle = b.color;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, Math.max(3, Math.sqrt(b.m)), 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ---------- WAVE INTERFERENCE ---------- */
+(function wave() {
+  const canvas = document.getElementById('waveCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const sources = [{x: w*0.35, y: h/2}, {x: w*0.65, y: h/2}];
+  let t = 0;
+
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,w,h);
+
+    const step = 4;
+    for (let x = 0; x < w; x += step) {
+      for (let y = 0; y < h; y += step) {
+        let sum = 0;
+        sources.forEach(s => {
+          const d = Math.hypot(x - s.x, y - s.y);
+          sum += Math.sin(d * 0.25 - t);
+        });
+        const v = sum / 2;
+        if (v > 0.5) {
+          ctx.fillStyle = 'rgba(118,91,164,' + (v*0.5) + ')';
+          ctx.fillRect(x, y, step, step);
+        } else if (v < -0.5) {
+          ctx.fillStyle = 'rgba(255,90,31,' + (-v*0.35) + ')';
+          ctx.fillRect(x, y, step, step);
+        }
+      }
+    }
+    t += 0.18;
+    if (!reduceMotion) requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ---------- BROWNIAN MOTION ---------- */
+(function brownian() {
+  const canvas = document.getElementById('brownianCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const colors = ['#765ba4', '#ff5a1f', '#0fa968', '#131a22'];
+  let particles = Array.from({length: 4}, (_, i) => ({
+    x: w/2, y: h/2, trail: [], color: colors[i]
+  }));
+
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+      if (!reduceMotion) {
+        p.x += (Math.random() - 0.5) * 6;
+        p.y += (Math.random() - 0.5) * 6;
+        p.x = Math.max(6, Math.min(w-6, p.x));
+        p.y = Math.max(6, Math.min(h-6, p.y));
+        p.trail.push({x: p.x, y: p.y});
+        if (p.trail.length > 60) p.trail.shift();
+      }
+      ctx.strokeStyle = p.color + '66';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      p.trail.forEach((pt, i) => { if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y); });
+      ctx.stroke();
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+
+</body>
+</html>
