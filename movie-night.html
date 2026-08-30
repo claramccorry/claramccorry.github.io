@@ -655,9 +655,15 @@ $('#btn-swipe-no').addEventListener('click', ()=>recordSwipe(false));
 async function recordSwipe(liked){
   const movie = state.swipeDeck[state.swipeIndex];
   if(!movie) return;
-  await sb.from('movie_votes').upsert({
+  const { error } = await sb.from('movie_votes').upsert({
     room_code: state.roomCode, participant_name: state.name, movie_id: movie.movie_id, liked
   }, { onConflict:'room_code,participant_name,movie_id' });
+  if(error){
+    toast('Vote failed to save — check your connection');
+    console.error(error);
+    renderCard(); // reset the card position rather than silently moving on
+    return;
+  }
   state.swipeIndex++;
   if(state.swipeIndex >= state.swipeDeck.length){ finishSwiping(); } else { renderCard(); }
 }
