@@ -259,6 +259,8 @@
       #eef1f6;
     border: 1px solid var(--paper-line);
   }
+  .about-text .tags { margin-top: 20px; }
+  .about-text .tag { font-size: 0.75rem; padding: 5px 12px; }
   .about-text p { color: var(--ink-soft); max-width: 62ch; }
   .stat-row {
     display: flex;
@@ -337,20 +339,20 @@
   <section class="hero" id="top">
     <div class="wrap hero-grid">
       <div>
-        <div class="eyebrow">SIGNAL LIVE — running in your browser</div>
-        <h1 class="hero-title">Physics, simulated <em>in the open.</em></h1>
+        <div class="eyebrow">UNIVERSITY OF GALWAY — PHYSICS</div>
+        <h1 class="hero-title">Between the textbook and the lab bench.</h1>
         <p class="hero-sub">
-          I build small computational models — pendulums, gravity, waves — and publish the
-          working code alongside them. This page is itself running one, right now, no
-          screenshots involved.
+          I'm an undergraduate physics student with a growing focus on radiation physics,
+          medical physics, and biophotonics. This is where I keep my research, lab work,
+          and the odd computational model I build for fun.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#sims">See the simulations</a>
-          <a class="btn btn-ghost" href="#about">About me</a>
+          <a class="btn btn-primary" href="#about">About me</a>
+          <a class="btn btn-ghost" href="#projects">See my work</a>
         </div>
       </div>
       <div class="scope-frame">
-        <div class="scope-label"><span>hero.lissajous(t)</span><span>x(t), y(t)</span></div>
+        <div class="scope-label"><span>a small live simulation</span><span>just for fun</span></div>
         <canvas id="heroCanvas" width="440" height="320" aria-label="Live Lissajous curve animation"></canvas>
       </div>
     </div>
@@ -367,19 +369,20 @@
         <div class="avatar" role="img" aria-label="Placeholder avatar"></div>
         <div class="about-text">
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-            nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            I'm an undergraduate physics student at the University of Galway, with a strong
+            interest in radiation physics, medical physics, and biophotonics — the physics
+            of how light interacts with living tissue.
           </p>
           <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-            fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
+            Through the Tyndall Summer Fellowship, I researched upconversion nanoparticles
+            and their potential use in deep-tissue imaging. Outside the lab, I volunteer
+            with Cell Explorers, which has shaped how I communicate and present science,
+            and how I work within a team.
           </p>
-          <div class="stat-row">
-            <div class="stat"><b>12+</b><span>SIMULATIONS BUILT</span></div>
-            <div class="stat"><b>3</b><span>LAB PROJECTS LED</span></div>
-            <div class="stat"><b>3</b><span>YEARS IN THE LAB</span></div>
+          <div class="tags">
+            <span class="tag">radiation physics</span>
+            <span class="tag">medical physics</span>
+            <span class="tag">biophotonics</span>
           </div>
         </div>
       </div>
