@@ -363,9 +363,9 @@ $('#btn-create').addEventListener('click', async ()=>{
   if(!name){ toast('Enter your name first'); return; }
   const code = randomCode();
   const { error: roomErr } = await sb.from('rooms').insert({ code, phase:'genres' });
-  if(roomErr){ toast('Could not create room — try again'); console.error(roomErr); return; }
+  if(roomErr){ toast('Room error: ' + (roomErr.message || roomErr.code || 'unknown')); console.error(roomErr); return; }
   const { error: partErr } = await sb.from('participants').insert({ room_code:code, name });
-  if(partErr){ toast('Could not join as ' + name); console.error(partErr); return; }
+  if(partErr){ toast('Join error: ' + (partErr.message || partErr.code || 'unknown')); console.error(partErr); return; }
   enterRoom(code, name);
 });
 
@@ -376,9 +376,10 @@ $('#btn-join').addEventListener('click', async ()=>{
   errEl.classList.add('hidden');
   if(!code || !name){ toast('Enter a room code and your name'); return; }
   const { data: room, error: roomErr } = await sb.from('rooms').select('*').eq('code', code).maybeSingle();
-  if(roomErr || !room){ errEl.textContent = "Can't find that room — check the code."; errEl.classList.remove('hidden'); return; }
+  if(roomErr){ errEl.textContent = 'Lookup error: ' + roomErr.message; errEl.classList.remove('hidden'); return; }
+  if(!room){ errEl.textContent = "Can't find that room — check the code."; errEl.classList.remove('hidden'); return; }
   const { error: partErr } = await sb.from('participants').insert({ room_code:code, name });
-  if(partErr && partErr.code !== '23505'){ toast('Could not join'); console.error(partErr); return; }
+  if(partErr && partErr.code !== '23505'){ toast('Join error: ' + (partErr.message || partErr.code)); console.error(partErr); return; }
   enterRoom(code, name);
 });
 
